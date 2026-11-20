@@ -2,27 +2,48 @@
 <html lang="id">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="mobile-web-app-capable" content="yes">
   <title>Gates of Olympus - Slot Demo</title>
   <style>
     * {
       margin: 0;
       padding: 0;
       box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
     }
+
     html, body {
       width: 100%;
       height: 100%;
       background-color: #0b0719;
       overflow: hidden;
-    }
-    .game-wrapper {
+      overscroll-behavior: none;
+      touch-action: none;
       position: fixed;
       inset: 0;
+    }
+
+    .game-wrapper {
+      position: fixed;
+      top: 0;
+      left: 0;
       width: 100vw;
       height: 100vh;
+      height: 100dvh;
+      padding-top: env(safe-area-inset-top, 0px);
+      padding-right: env(safe-area-inset-right, 0px);
+      padding-bottom: env(safe-area-inset-bottom, 0px);
+      padding-left: env(safe-area-inset-left, 0px);
       background: #0b0719;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
+
     iframe {
       width: 100%;
       height: 100%;
@@ -36,7 +57,7 @@
     <iframe
       id="gameIframe"
       src="https://demogamesfree.ppgames.net/gs2c/openGame.do?gameSymbol=vs20olympgate&websiteUrl=https%3A%2F%2Fdemogamesfree.pragmaticplay.net&jurisdiction=99&lobby_url=https%3A%2F%2Fwww.pragmaticplay.zone%2Fru%2F&lang=EN&cur=USD"
-      allow="autoplay; fullscreen"
+      allow="autoplay; fullscreen; screen-wake-lock"
       allowfullscreen
       scrolling="no"
     ></iframe>
@@ -45,23 +66,67 @@
   <script>
     const wrapper = document.getElementById('gameWrapper');
 
-    function enterFullscreen() {
-      if (!document.fullscreenElement && !document.webkitFullscreenElement) {
-        if (wrapper.requestFullscreen) {
-          wrapper.requestFullscreen().catch(() => {});
-        } else if (wrapper.webkitRequestFullscreen) {
-          wrapper.webkitRequestFullscreen();
-        }
+    function syncViewportSize() {
+      const vw = window.visualViewport ? window.visualViewport.width : window.innerWidth;
+      const vh = window.visualViewport ? window.visualViewport.height : window.innerHeight;
+
+      wrapper.style.width = Math.round(vw) + 'px';
+      wrapper.style.height = Math.round(vh) + 'px';
+
+      if (window.visualViewport) {
+        wrapper.style.top = Math.round(window.visualViewport.offsetTop) + 'px';
+        wrapper.style.left = Math.round(window.visualViewport.offsetLeft) + 'px';
       }
+
+      const isPortrait = vh >= vw;
+      document.documentElement.setAttribute('data-orientation', isPortrait ? 'portrait' : 'landscape');
     }
 
-    // Coba masuk fullscreen saat halaman dimuat
-    window.addEventListener('load', enterFullscreen);
+    function enterFullscreen() {
+      const docEl = document.documentElement;
+      if (!document.fullscreenElement && !document.webkitFullscreenElement) {
+        if (docEl.requestFullscreen) {
+          docEl.requestFullscreen().catch(() => {});
+        } else if (docEl.webkitRequestFullscreen) {
+          docEl.webkitRequestFullscreen();
+        }
+      }
+      // Kunci posisi scroll agar bar browser mobile tetap tersembunyi
+      window.scrollTo(0, 1);
+      syncViewportSize();
+    }
 
-    // Fallback: aktifkan fullscreen otomatis pada sentuhan/klik pertama jika browser memblokir auto-fullscreen
-    ['click', 'touchstart', 'keydown'].forEach(evt => {
-      document.addEventListener(evt, enterFullscreen, { once: true });
+    function refit() {
+      syncViewportSize();
+      setTimeout(syncViewportSize, 100);
+      setTimeout(syncViewportSize, 350);
+      setTimeout(syncViewportSize, 800);
+    }
+
+    window.addEventListener('load', () => {
+      syncViewportSize();
+      enterFullscreen();
     });
+
+    window.addEventListener('resize', syncViewportSize, { passive: true });
+    window.addEventListener('orientationchange', refit, { passive: true });
+    document.addEventListener('fullscreenchange', refit);
+    document.addEventListener('webkitfullscreenchange', refit);
+
+    if (window.visualViewport) {
+      window.visualViewport.addEventListener('resize', syncViewportSize);
+      window.visualViewport.addEventListener('scroll', syncViewportSize);
+    }
+
+    if (window.screen && screen.orientation && screen.orientation.addEventListener) {
+      screen.orientation.addEventListener('change', refit);
+    }
+
+    ['click', 'touchstart', 'keydown'].forEach(evt => {
+      document.addEventListener(evt, enterFullscreen, { once: true, passive: true });
+    });
+
+    syncViewportSize();
   </script>
 </body>
 </html>
