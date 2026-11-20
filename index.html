@@ -26,17 +26,26 @@
       overscroll-behavior: none;
       -webkit-user-select: none;
       user-select: none;
+      position: fixed;
+      top: 0;
+      left: 0;
     }
 
-    /* Kotak game 50% menempel di pojok kiri bawah */
+    /* ====== GAME HOLDER FULLSCREEN ====== */
     #og-game-holder {
       position: fixed;
-      left: env(safe-area-inset-left, 0px);
-      bottom: env(safe-area-inset-bottom, 0px);
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      width: 100%;
+      height: 100%;
+      width: 100vw;
+      height: 100vh;
+      width: 100dvw;
+      height: 100dvh;
       background: #0b0719;
       overflow: hidden;
-      border-radius: 0 14px 0 0;
-      box-shadow: 4px -4px 24px rgba(0, 0, 0, 0.7);
       z-index: 9999;
     }
 
@@ -90,47 +99,58 @@
         };
       }
 
-      function applyBottomCornerBox() {
+      /* ====== FULLSCREEN VERSION ====== */
+      function applyFullscreen() {
         var info = detectDeviceAndOrientation();
 
-        /* Ukuran kotak dikecilkan 50% dari canvas WebView */
-        var boxW = Math.round(info.w * 0.5);
-        var boxH = Math.round(info.h * 0.5);
+        /* Holder memenuhi seluruh layar */
+        var boxW = info.w;
+        var boxH = info.h;
 
         holder.style.width = boxW + 'px';
         holder.style.height = boxH + 'px';
         holder.style.left = '0px';
+        holder.style.top = '0px';
+        holder.style.right = '0px';
         holder.style.bottom = '0px';
-        holder.style.top = 'auto';
-        holder.style.right = 'auto';
 
-        /* Resolusi referensi internal agar UI Pragmatic Play tetap tajam & proporsional di dalam kotak */
+        /* Resolusi referensi internal agar UI Pragmatic Play tetap tajam & proporsional */
         var refW = info.isPortrait ? 720 : 1280;
         var refH = info.isPortrait ? 1280 : 720;
 
+        /* Hitung skala agar iframe pas (cover/fit) di dalam layar */
         var scale = Math.min(boxW / refW, boxH / refH);
-        var dw = refW * scale;
-        var dh = refH * scale;
+
+        /* Untuk fullscreen, pakai strategi "cover" supaya tidak ada letterbox hitam:
+           perkecil skala jika rasio device lebih lebar/pendek dari referensi. */
+        var scaleCover = Math.max(boxW / refW, boxH / refH);
+
+        /* Pilih scaleCover agar benar-benar fullscreen tanpa border hitam.
+           Kalau ingin tetap proporsional (letterbox), ganti ke `scale`. */
+        var finalScale = scaleCover;
+
+        var dw = refW * finalScale;
+        var dh = refH * finalScale;
 
         iframe.style.setProperty('width', refW + 'px', 'important');
         iframe.style.setProperty('height', refH + 'px', 'important');
         iframe.style.setProperty('left', Math.round((boxW - dw) / 2) + 'px', 'important');
         iframe.style.setProperty('top', Math.round((boxH - dh) / 2) + 'px', 'important');
-        iframe.style.setProperty('transform', 'scale(' + scale + ')', 'important');
+        iframe.style.setProperty('transform', 'scale(' + finalScale + ')', 'important');
         iframe.style.setProperty('transform-origin', 'top left', 'important');
         iframe.style.setProperty('max-width', 'none', 'important');
         iframe.style.setProperty('max-height', 'none', 'important');
       }
 
       function refit() {
-        applyBottomCornerBox();
-        setTimeout(applyBottomCornerBox, 100);
-        setTimeout(applyBottomCornerBox, 350);
-        setTimeout(applyBottomCornerBox, 800);
-        setTimeout(applyBottomCornerBox, 1500);
+        applyFullscreen();
+        setTimeout(applyFullscreen, 100);
+        setTimeout(applyFullscreen, 350);
+        setTimeout(applyFullscreen, 800);
+        setTimeout(applyFullscreen, 1500);
       }
 
-      window.addEventListener('resize', applyBottomCornerBox, false);
+      window.addEventListener('resize', applyFullscreen, false);
       window.addEventListener('orientationchange', refit, false);
       document.addEventListener('fullscreenchange', refit, false);
       document.addEventListener('webkitfullscreenchange', refit, false);
@@ -139,8 +159,8 @@
         screen.orientation.addEventListener('change', refit);
       }
       if (window.visualViewport) {
-        window.visualViewport.addEventListener('resize', applyBottomCornerBox);
-        window.visualViewport.addEventListener('scroll', applyBottomCornerBox);
+        window.visualViewport.addEventListener('resize', applyFullscreen);
+        window.visualViewport.addEventListener('scroll', applyFullscreen);
       }
 
       refit();
