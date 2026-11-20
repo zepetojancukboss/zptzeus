@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Gates of Olympus - Slot Demo</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    html, body {
+      width: 100%;
+      height: 100%;
+      background-color: #0b0719;
+      overflow: hidden;
+      font-family: system-ui, -apple-system, sans-serif;
+    }
+    .game-wrapper {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #0b0719;
+    }
+    iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+      display: block;
+    }
+    .fullscreen-btn {
+      position: fixed;
+      top: 12px;
+      right: 12px;
+      z-index: 9999;
+      background: rgba(15, 10, 35, 0.75);
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      color: #fff;
+      border-radius: 8px;
+      width: 38px;
+      height: 38px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      backdrop-filter: blur(4px);
+      transition: background 0.2s, transform 0.15s;
+    }
+    .fullscreen-btn:hover {
+      background: rgba(255, 198, 27, 0.25);
+      border-color: #ffc61b;
+    }
+    .fullscreen-btn svg {
+      width: 18px;
+      height: 18px;
+      fill: #d6d6d6;
+    }
+  </style>
+</head>
+<body>
+  <div class="game-wrapper" id="gameWrapper">
+    <button class="fullscreen-btn" id="fsBtn" title="Fullscreen" aria-label="Fullscreen">
+      <svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+        <path d="M0.472966 0.0697937H4.96349C5.2247 0.0697937 5.43635 0.281511 5.43635 0.542659V1.80363C5.43635 2.06478 5.2247 2.2765 4.96349 2.2765H3.76726L7.36917 5.87828C7.45782 5.96693 7.50769 6.08723 7.50769 6.21263C7.50769 6.33803 7.45782 6.45833 7.36917 6.54698L6.47747 7.43868C6.38511 7.53104 6.26412 7.57719 6.14306 7.57719C6.02207 7.57719 5.90102 7.53098 5.80865 7.43868L2.20674 3.83689V5.03318C2.20674 5.29433 1.99509 5.50604 1.73388 5.50604H0.472903C0.211692 5.50604 3.73299e-05 5.29433 3.73299e-05 5.03318V0.542659C0.000100379 0.281511 0.211818 0.0697937 0.472966 0.0697937ZM16.233 2.2765H15.0367C14.7755 2.2765 14.5639 2.06478 14.5639 1.80363V0.542659C14.5639 0.281511 14.7755 0.0697937 15.0367 0.0697937H19.5273C19.7885 0.0697937 20.0001 0.281511 20.0001 0.542659V5.03318C20.0001 5.29433 19.7885 5.50604 19.5273 5.50604H18.2663C18.0051 5.50604 17.7934 5.29433 17.7934 5.03318V3.83695L14.1918 7.43868C14.0994 7.53098 13.9783 7.57719 13.8573 7.57719C13.7363 7.57719 13.6152 7.53098 13.5228 7.43868L12.6312 6.54698C12.5425 6.45833 12.4927 6.33803 12.4927 6.21263C12.4927 6.08723 12.5425 5.96693 12.6312 5.87828L16.233 2.2765ZM13.5229 12.5614C13.7076 12.3767 14.007 12.3767 14.1918 12.5614L17.7934 16.163V14.9668C17.7934 14.7056 18.0051 14.4939 18.2663 14.4939H19.5273C19.7885 14.4939 20.0001 14.7056 20.0001 14.9668V19.4573C20.0001 19.7184 19.7885 19.9301 19.5273 19.9301H15.0367C14.7755 19.9301 14.5639 19.7184 14.5639 19.4573V18.1963C14.5639 17.9352 14.7755 17.7234 15.0367 17.7234H16.233L12.6312 14.1218C12.5426 14.0331 12.4928 13.9128 12.4928 13.7874C12.4928 13.662 12.5426 13.5417 12.6312 13.4531L13.5229 12.5614ZM0.472967 14.494H1.73394C1.99515 14.494 2.20681 14.7057 2.20681 14.9668V16.1632L5.80878 12.5614C5.99345 12.3768 6.2928 12.3768 6.47747 12.5614L7.36917 13.4531C7.45782 13.5418 7.50769 13.6621 7.50769 13.7875C7.50769 13.9129 7.45782 14.0332 7.36911 14.1218L3.76726 17.7235H4.96349C5.2247 17.7235 5.43635 17.9352 5.43635 18.1964V19.4573C5.43635 19.7185 5.2247 19.9302 4.96349 19.9302H0.472967C0.211756 19.9302 0.000101712 19.7185 0.000101712 19.4573V14.9668C0.000101712 14.7057 0.211819 14.494 0.472967 14.494Z"/>
+      </svg>
+    </button>
+    <iframe
+      id="gameIframe"
+      src="https://demogamesfree.ppgames.net/gs2c/openGame.do?gameSymbol=vs20olympgate&websiteUrl=https%3A%2F%2Fdemogamesfree.pragmaticplay.net&jurisdiction=99&lobby_url=https%3A%2F%2Fwww.pragmaticplay.zone%2Fru%2F&lang=EN&cur=USD"
+      allow="autoplay; fullscreen"
+      allowfullscreen
+      scrolling="no"
+    ></iframe>
+  </div>
+
+  <script>
+    const fsBtn = document.getElementById('fsBtn');
+    const wrapper = document.getElementById('gameWrapper');
+
+    fsBtn.addEventListener('click', function () {
+      if (!document.fullscreenElement) {
+        if (wrapper.requestFullscreen) {
+          wrapper.requestFullscreen();
+        } else if (wrapper.webkitRequestFullscreen) {
+          wrapper.webkitRequestFullscreen();
+        }
+      } else {
+        if (document.exitFullscreen) {
+          document.exitFullscreen();
+        } else if (document.webkitExitFullscreen) {
+          document.webkitExitFullscreen();
+        }
+      }
+    });
+  </script>
+</body>
+</html>
